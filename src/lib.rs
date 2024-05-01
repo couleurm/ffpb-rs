@@ -33,11 +33,16 @@ fn time_to_secs(x: &Captures) -> Result<usize, ParseIntError> {
 ///     ffpb::ffmpeg(&args).unwrap();
 /// }
 /// ```
-pub fn ffmpeg(args: &[String]) -> Result<(), Error> {
+pub fn ffmpeg(
+    ff_path: String,
+    args: &[String],
+    vs_in: std::process::ChildStdout,
+) -> Result<(), Error> {
     kdam::term::init(stderr().is_terminal());
 
-    let ffmpeg = Command::new("ffmpeg")
+    let ffmpeg = Command::new(ff_path)
         .args(args)
+        .stdin(vs_in)
         .stderr(Stdio::piped())
         .spawn()
         .map_err(|_| new_error("failed to launch ffmpeg binary."))?
